@@ -2,11 +2,11 @@ class Carrito
 {
     //productos : Array<string> = []; //equivalent to line below
     productos : string[] = [];
-    cantidad : number;
+    cantidad : number = 0;
 
     constructor()
     {
-        this.cantidad = 0;
+        // this.cantidad = 0;
     }
 
     anadirProducto(producto : string)
