@@ -23,6 +23,8 @@ class Carrito
 
     toString()
     {
+        console.log('Número de productos en el carrito: ', this.cantidad, '\n', '\n');
+
         this.productos.forEach(producto => {
             console.log('[', producto, ']', '\n');
         });
