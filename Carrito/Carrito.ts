@@ -1,49 +1,49 @@
-class Producto
+class Product
 {
-    descripcion : string;
-    precio : number;
+    description : string;
+    price : number;
 
-    constructor(descripcion : string, precio : number)
+    constructor(description : string, price : number)
     {
-        this.descripcion = descripcion;
-        this.precio = precio;
+        this.description = description;
+        this.price = price;
     }
 
     toString()
     {
-        console.log('[', this.descripcion, ']', ' with price: ', this.precio, '\n');
+        console.log('[', this.description, ']', ' with price: ', this.price, '\n');
     }
 }
 
-class Carrito
+class ShoppingCart
 {
-    //productos : Array<string> = []; //equivalent to line below
-    productos : Producto[] = [];
-    cantidad : number = 0;
+    //products : Array<string> = []; //equivalent to line below
+    products : Product[] = [];
+    count : number = 0;
 
     constructor()
     {
-        // this.cantidad = 0;
+        // this.count = 0;
     }
 
-    anadirProducto(producto : Producto)
+    addProduct(product : Product)
     {
-        this.productos[this.cantidad] = producto;
-        this.cantidad++;
+        this.products[this.count] = product;
+        this.count++;
     }
 
-    quitarProducto(producto : Producto)
+    removeProduct(product : Product)
     {
-        delete this.productos[this.cantidad];
-        this.cantidad--;
+        delete this.products[this.count];
+        this.count--;
     }
 
     toString()
     {
-        console.log('Número de productos en el carrito: ', this.cantidad, '\n', '\n');
+        console.log('Number of products in this shopping cart: ', this.count, '\n', '\n');
 
-        this.productos.forEach(producto => {
-            console.log('[', producto.toString(), ']', '\n');
+        this.products.forEach(product => {
+            console.log('[', product.toString(), ']', '\n');
         });
     }
 }
