@@ -5,11 +5,18 @@ import {MongoClient} from 'mongodb';
 
 let localConnectionURL : string = 'mongodb://localhost:8000/productsDB'; 
 
-export const addProductDB = async (productJSON : string) : Promise<T> => {
+export const addProductDB = async (product : Product) : Promise<any> => {
     const clientDB : MongoClient = await MongoClient.connect(localConnectionURL);
-
+    let db = clientDB.db('productsDB');
+    let collection = db.collection('products');
+    collection.findOne(JSON.);
+    return clientDB;
 }
 
-export const checkProductStock = async (productJSON : string) : Promise<T> => {
+export const checkProductStock = async (product : Product) : Promise<any> => {
+    const clientDB : MongoClient = await MongoClient.connect(localConnectionURL);
+    let db = clientDB.db('productsDB');
+    db.collection('products');
+
 
 }
