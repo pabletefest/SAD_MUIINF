@@ -1,17 +1,21 @@
 class Product
 {
+    code: number;
     description : string;
     price : number;
+    quantity : number;
 
-    constructor(description : string, price : number)
-    {
+    constructor(code : number, description : string, price : number, quantity : number)
+    {   
+        this.code = code;
         this.description = description;
         this.price = price;
+        this.quantity = quantity
     }
 
     toString()
     {
-        console.log('[', this.description, ']', ' with price: ', this.price, '\n');
+        console.log('[', this.code, ': ', this.description, ']', ' with price: ', this.price, ' and quantity: ', this.quantity, '\n');
     }
 }
 
