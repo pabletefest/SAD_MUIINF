@@ -80,3 +80,17 @@ class ShoppingCart
         });
     }
 }
+
+function testCart() {
+    let shpCart: ShoppingCart = new ShoppingCart();
+    DB.addProductsDB(function(err, result) {
+        if (err) throw err;
+        setTimeout(()=>{shpCart.addProduct(new Product(5, 'Mouse', 20, 1));},1000);
+        setTimeout(()=>{shpCart.addProduct(new Product(3, 'Teclado', 30, 1));},1000);
+	    setTimeout(()=>{shpCart.toString();},1500);
+        setTimeout(()=>{shpCart.removeProduct(new Product(5, 'Mouse', 20, 1));},1000);
+	    setTimeout(()=>{shpCart.toString();},1500);
+    });
+}
+
+testCart();
