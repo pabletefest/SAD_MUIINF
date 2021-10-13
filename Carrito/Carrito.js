@@ -67,20 +67,22 @@ var ShoppingCart = /** @class */ (function () {
      */
     ShoppingCart.prototype.addProduct = function (product) {
         return __awaiter(this, void 0, void 0, function () {
-            var isStock;
+            var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, DB.checkProductStock(product, function (err, result) {
+                    case 0: return [4 /*yield*/, DB.checkProductStock(product, function (err, result, isStock) {
                             if (err)
                                 throw err;
-                            console.log(result);
+                            if (isStock) {
+                                _this.products.push(product);
+                                console.log("Stock available!");
+                            }
+                            else
+                                console.log("No stock available!");
+                            // console.log(result);
                         })];
                     case 1:
-                        isStock = _a.sent();
-                        if (isStock)
-                            this.products.push(product);
-                        else
-                            console.log("No stock available!");
+                        _a.sent();
                         return [2 /*return*/];
                 }
             });
@@ -93,7 +95,8 @@ var ShoppingCart = /** @class */ (function () {
     ShoppingCart.prototype.removeProduct = function (product) {
         var indexObject = this.products.indexOf(product);
         if (indexObject == -1)
-            return;
+            // return;
+            console.log("Couldn't remove the product, not present!");
         this.products.splice(indexObject, 1);
     };
     /**
@@ -101,9 +104,27 @@ var ShoppingCart = /** @class */ (function () {
      */
     ShoppingCart.prototype.toString = function () {
         console.log('Number of products in this shopping cart: ', this.products.length, '\n', '\n');
-        this.products.forEach(function (product) {
-            console.log('[', product.toString(), ']', '\n');
-        });
+        console.log(this.products);
+        // let arrayFiltered = this.products.filter(product => product != undefined);
+        // this.products.forEach(product => {
+        //     if (product != undefined && product !== undefined)
+        //         console.log(product.toString(), '\n');
+        // });
     };
     return ShoppingCart;
 }());
+function testCart() {
+    var shpCart = new ShoppingCart();
+    DB.addProductsDB(function (err, result) {
+        if (err)
+            throw err;
+        var product1 = new Product(5, 'Mouse', 20, 1);
+        var product2 = new Product(3, 'Teclado', 30, 1);
+        setTimeout(function () { shpCart.addProduct(product1); }, 1000);
+        setTimeout(function () { shpCart.addProduct(product2); }, 2000);
+        setTimeout(function () { shpCart.toString(); }, 3000);
+        setTimeout(function () { shpCart.removeProduct(product1); }, 4000);
+        setTimeout(function () { shpCart.toString(); }, 5000);
+    });
+}
+testCart();

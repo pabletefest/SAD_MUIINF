@@ -38,11 +38,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 exports.checkProductStock = exports.addProductsDB = void 0;
 var mongodb = require("mongodb");
-var assert_1 = require("assert");
 // const {MongoClient} = require('mongodb');
 // import mongodb from 'mongodb';
 // let client = mongodb.MongoClient;
-var localConnectionURL = 'mongodb://localhost:8000/productsDB';
+var localConnectionURL = 'mongodb+srv://admin:root@cluster0.gxfn0.mongodb.net/ProductsDB?retryWrites=true&w=majority';
 /**
  * Opens a connection to the MongoDB and inserts some products to it.
  * @param callback Function to be called when the DB finished adding the products.
@@ -54,18 +53,20 @@ var addProductsDB = function (callback) { return __awaiter(void 0, void 0, void 
             case 0: return [4 /*yield*/, mongodb.MongoClient.connect(localConnectionURL)];
             case 1:
                 clientDB = _a.sent();
-                db = clientDB.db('productsDB');
-                collection = db.collection('products');
+                db = clientDB.db('ProductsDB');
+                collection = db.collection('Product');
+                collection.deleteMany({});
                 collection.insertMany([{ code: 1, description: 'Portatil', price: 900, quantity: 7 }, { code: 2, description: 'Sobremesa', price: 1200, quantity: 2 },
                     { code: 3, description: 'Teclado', price: 30, quantity: 5 }, { code: 4, description: 'Webcam', price: 40, quantity: 2 },
                     { code: 5, description: 'Mouse', price: 20, quantity: 1 }
                 ], function (err, result) {
-                    assert_1.strict.equal(err, null);
-                    assert_1.strict.equal(5, result.result.n);
-                    assert_1.strict.equal(5, result.ops.length);
+                    // assert.equal(err, null);
+                    // assert.equal(5, result.result.n);
+                    // assert.equal(5, result.ops.length);
                     console.log("Se han insertado 5 elementos");
                     callback(err, result),
-                        db.close();
+                        clientDB.close();
+                    // db.close();
                 });
                 return [2 /*return*/];
         }
@@ -79,14 +80,14 @@ exports.addProductsDB = addProductsDB;
  * @returns True indicating the product was found successfully in the DB, false otherwise.
  */
 var checkProductStock = function (product, callback) { return __awaiter(void 0, void 0, void 0, function () {
-    var stockAvailable, clientDB, db, collection;
+    var clientDB, db, collection;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, mongodb.MongoClient.connect(localConnectionURL)];
             case 1:
                 clientDB = _a.sent();
-                db = clientDB.db('productsDB');
-                collection = db.collection('products');
+                db = clientDB.db('ProductsDB');
+                collection = db.collection('Product');
                 collection.findOne({
                     $and: [
                         { code: product.code },
@@ -95,19 +96,21 @@ var checkProductStock = function (product, callback) { return __awaiter(void 0, 
                 }, function (err, result) {
                     if (result) {
                         console.log("Stock suficiente del producto " + result.code + ": " + result.description + "\n");
-                        db.close();
-                        callback(err, result);
-                        stockAvailable = true;
+                        // db.close();
+                        clientDB.close();
+                        callback(err, result, true);
+                        // stockAvailable = true;
                     }
                     else {
                         console.log("El producto " + product.code + ": " + product.description + " no puede añadirse" +
                             " ya que no existe en la base o no hay stock suficiente\n(Stock menor a " + product.quantity + ")\n");
-                        db.close();
-                        callback(err, result);
-                        stockAvailable = false;
+                        // db.close();
+                        clientDB.close();
+                        callback(err, result, false);
+                        // stockAvailable = false;
                     }
                 });
-                return [2 /*return*/, stockAvailable];
+                return [2 /*return*/];
         }
     });
 }); };

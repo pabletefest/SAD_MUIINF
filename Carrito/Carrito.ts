@@ -43,15 +43,18 @@ class ShoppingCart
      */
     async addProduct(product : Product)
     {
-        const isStock : boolean = await DB.checkProductStock(product, (err, result) => {
+        await DB.checkProductStock(product, (err, result, isStock) => {
             if (err) throw err;
-            console.log(result);
-        });
 
-        if (isStock)
-            this.products.push(product);    
-        else
-            console.log("No stock available!");
+            if (isStock)
+            {
+                this.products.push(product);    
+                console.log("Stock available!");
+            }
+            else
+                console.log("No stock available!");
+            // console.log(result);
+        });
     }
 
     /**
@@ -63,7 +66,8 @@ class ShoppingCart
         let indexObject : number = this.products.indexOf(product);
 
         if (indexObject == -1)
-            return;
+            // return;
+            console.log("Couldn't remove the product, not present!");
 
         this.products.splice(indexObject, 1);
     }
@@ -74,10 +78,12 @@ class ShoppingCart
     toString()
     {
         console.log('Number of products in this shopping cart: ', this.products.length, '\n', '\n');
-
-        this.products.forEach(product => {
-            console.log('[', product.toString(), ']', '\n');
-        });
+        console.log(this.products);
+        // let arrayFiltered = this.products.filter(product => product != undefined);
+        // this.products.forEach(product => {
+        //     if (product != undefined && product !== undefined)
+        //         console.log(product.toString(), '\n');
+        // });
     }
 }
 
@@ -85,11 +91,15 @@ function testCart() {
     let shpCart: ShoppingCart = new ShoppingCart();
     DB.addProductsDB(function(err, result) {
         if (err) throw err;
-        setTimeout(()=>{shpCart.addProduct(new Product(5, 'Mouse', 20, 1));},1000);
-        setTimeout(()=>{shpCart.addProduct(new Product(3, 'Teclado', 30, 1));},1000);
-	    setTimeout(()=>{shpCart.toString();},1500);
-        setTimeout(()=>{shpCart.removeProduct(new Product(5, 'Mouse', 20, 1));},1000);
-	    setTimeout(()=>{shpCart.toString();},1500);
+
+        let product1 : Product =  new Product(5, 'Mouse', 20, 1);
+        let product2 : Product = new Product(3, 'Teclado', 30, 1);
+
+        setTimeout(()=>{shpCart.addProduct(product1);},1000);
+        setTimeout(()=>{shpCart.addProduct(product2);},2000);
+	    setTimeout(()=>{shpCart.toString();},3000);
+        setTimeout(()=>{shpCart.removeProduct(product1);},4000);
+	    setTimeout(()=>{shpCart.toString();},5000);
     });
 }
 
