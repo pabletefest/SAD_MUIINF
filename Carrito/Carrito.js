@@ -36,22 +36,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
+exports.ShoppingCart = void 0;
 var DB = require("./MongoDB");
-/**
- * Class representing a product. It specifies an ID for the product, a description of it, its price and the quantity of the same type the user wants to add.
- */
-var Product = /** @class */ (function () {
-    function Product(code, description, price, quantity) {
-        this.code = code;
-        this.description = description;
-        this.price = price;
-        this.quantity = quantity;
-    }
-    Product.prototype.toString = function () {
-        console.log('[', this.code, ': ', this.description, ']', ' with price: ', this.price, ' and quantity: ', this.quantity, '\n');
-    };
-    return Product;
-}());
 /**
  * Class representing the shopping cart object, in charge of managing the products the user wants to add/remove.
  */
@@ -60,6 +46,14 @@ var ShoppingCart = /** @class */ (function () {
         //products : Array<string> = []; //equivalent to line below
         this.products = [];
     }
+    /**
+     * Adds the product into the ShoppingCart without cheking with the database.
+     * @param product The product to be inserted in the shopping cart.
+     */
+    ShoppingCart.prototype.addProductNoDB = function (product) {
+        this.products.push(product);
+        console.log("Product added to the shopping cart!\n");
+    };
     /**
      * Checks for product quantity stock before inserting the product in the array.
      * If no stock is available, it is thrown an error and a message indicating inexistent stock is printed.
@@ -70,17 +64,19 @@ var ShoppingCart = /** @class */ (function () {
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, DB.checkProductStock(product, function (err, result, isStock) {
-                            if (err)
-                                throw err;
-                            if (isStock) {
-                                _this.products.push(product);
-                                console.log("Stock available!");
-                            }
-                            else
-                                console.log("No stock available!");
-                            // console.log(result);
-                        })];
+                    case 0:
+                        console.log("\nAdding product...\n");
+                        return [4 /*yield*/, DB.checkProductStock(product, function (err, result, isStock) {
+                                if (err)
+                                    throw err;
+                                if (isStock) {
+                                    _this.products.push(product);
+                                    console.log("Stock available!\n");
+                                }
+                                else
+                                    console.log("No stock available!\n");
+                                // console.log(result);
+                            })];
                     case 1:
                         _a.sent();
                         return [2 /*return*/];
@@ -93,10 +89,11 @@ var ShoppingCart = /** @class */ (function () {
      * @param product The product to insert in the shopping cart.
      */
     ShoppingCart.prototype.removeProduct = function (product) {
+        console.log("\nRemoving product...\n");
         var indexObject = this.products.indexOf(product);
         if (indexObject == -1)
             // return;
-            console.log("Couldn't remove the product, not present!");
+            console.log("Couldn't remove the product, not present!\n");
         this.products.splice(indexObject, 1);
     };
     /**
@@ -113,18 +110,4 @@ var ShoppingCart = /** @class */ (function () {
     };
     return ShoppingCart;
 }());
-function testCart() {
-    var shpCart = new ShoppingCart();
-    DB.addProductsDB(function (err, result) {
-        if (err)
-            throw err;
-        var product1 = new Product(5, 'Mouse', 20, 1);
-        var product2 = new Product(3, 'Teclado', 30, 1);
-        setTimeout(function () { shpCart.addProduct(product1); }, 1000);
-        setTimeout(function () { shpCart.addProduct(product2); }, 2000);
-        setTimeout(function () { shpCart.toString(); }, 3000);
-        setTimeout(function () { shpCart.removeProduct(product1); }, 4000);
-        setTimeout(function () { shpCart.toString(); }, 5000);
-    });
-}
-testCart();
+exports.ShoppingCart = ShoppingCart;

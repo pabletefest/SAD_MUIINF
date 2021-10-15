@@ -21,7 +21,7 @@ export class ShoppingCart
     addProductNoDB(product: Product)
     {
         this.products.push(product);
-        console.log("Product added to the shopping cart!");
+        console.log("Product added to the shopping cart!\n");
     }
 
     /**
@@ -31,16 +31,18 @@ export class ShoppingCart
      */
     async addProduct(product : Product)
     {
+        console.log("\nAdding product...\n");
+
         await DB.checkProductStock(product, (err, result, isStock) => {
             if (err) throw err;
 
             if (isStock)
             {
                 this.products.push(product);    
-                console.log("Stock available!");
+                console.log("Stock available!\n");
             }
             else
-                console.log("No stock available!");
+                console.log("No stock available!\n");
             // console.log(result);
         });
     }
@@ -51,11 +53,13 @@ export class ShoppingCart
      */
     removeProduct(product : Product)
     {
+        console.log("\nRemoving product...\n");
+
         let indexObject : number = this.products.indexOf(product);
 
         if (indexObject == -1)
             // return;
-            console.log("Couldn't remove the product, not present!");
+            console.log("Couldn't remove the product, not present!\n");
 
         this.products.splice(indexObject, 1);
     }

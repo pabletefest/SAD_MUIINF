@@ -2,7 +2,10 @@ import {Product} from './Producto';
 import {ShoppingCart} from './Carrito';
 import * as DB from './MongoDB';
 
-function testCartWithoutDB() {
+function testCartWithoutDB()
+{
+    console.log('\n\n', "TESTING BASIC SHOPPING CART", '\n');
+
     let shpCart: ShoppingCart = new ShoppingCart();
 
     let product1 : Product =  new Product(5, 'Mouse', 20, 1);
@@ -15,7 +18,10 @@ function testCartWithoutDB() {
 	setTimeout(()=>{shpCart.toString();},5000);
 }
 
-function testCartWithDB() {
+function testCartWithDB()
+{
+    console.log('\n\n', "TESTING MONGODB DATABASE INTEGRATED IN SHOPPING CART", '\n');
+
     let shpCart: ShoppingCart = new ShoppingCart();
     DB.addProductsDB(function(err, result) {
         if (err) throw err;
@@ -31,4 +37,5 @@ function testCartWithDB() {
     });
 }
 
-testCartWithDB();
+testCartWithoutDB();
+setTimeout(testCartWithDB, 6000); 

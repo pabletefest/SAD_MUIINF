@@ -19,7 +19,7 @@ export const addProductsDB = async (callback) : Promise<any> => {
     ,{ code: 3, description: 'Teclado', price: 30, quantity: 5 },{ code: 4, description: 'Webcam', price: 40, quantity: 2 }
     ,{ code: 5, description: 'Mouse', price: 20, quantity: 1 }
   ], function (err : any, result : any) {
-    console.log("Se han insertado los elementos");
+    console.log("Se han insertado los elementos\n");
     callback(err, result),
     clientDB.close();
     // db.close();
