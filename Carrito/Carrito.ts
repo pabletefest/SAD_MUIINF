@@ -1,39 +1,27 @@
 import * as DB from './MongoDB';
-
-/**
- * Class representing a product. It specifies an ID for the product, a description of it, its price and the quantity of the same type the user wants to add.
- */
-class Product
-{
-    code: number;
-    description : string;
-    price : number;
-    quantity : number;
-
-    constructor(code : number, description : string, price : number, quantity : number)
-    {   
-        this.code = code;
-        this.description = description;
-        this.price = price;
-        this.quantity = quantity
-    }
-
-    toString()
-    {
-        console.log('[', this.code, ': ', this.description, ']', ' with price: ', this.price, ' and quantity: ', this.quantity, '\n');
-    }
-}
+import {Product} from './Producto';
 
 /**
  * Class representing the shopping cart object, in charge of managing the products the user wants to add/remove.
  */
-class ShoppingCart
+export class ShoppingCart
 {
     //products : Array<string> = []; //equivalent to line below
     products : Product[] = [];
 
     constructor()
     {
+    }
+
+    /**
+     * Adds the product into the ShoppingCart without cheking with the database.
+     * @param product The product to be inserted in the shopping cart.
+     */
+
+    addProductNoDB(product: Product)
+    {
+        this.products.push(product);
+        console.log("Product added to the shopping cart!");
     }
 
     /**
@@ -86,21 +74,3 @@ class ShoppingCart
         // });
     }
 }
-
-function testCart() {
-    let shpCart: ShoppingCart = new ShoppingCart();
-    DB.addProductsDB(function(err, result) {
-        if (err) throw err;
-
-        let product1 : Product =  new Product(5, 'Mouse', 20, 1);
-        let product2 : Product = new Product(3, 'Teclado', 30, 1);
-
-        setTimeout(()=>{shpCart.addProduct(product1);},1000);
-        setTimeout(()=>{shpCart.addProduct(product2);},2000);
-	    setTimeout(()=>{shpCart.toString();},3000);
-        setTimeout(()=>{shpCart.removeProduct(product1);},4000);
-	    setTimeout(()=>{shpCart.toString();},5000);
-    });
-}
-
-testCart();
