@@ -39,6 +39,12 @@ io.on('connection', function(socket){
       socket.emit('username picked', 'This username is already taken');
     }
   });
+
+  socket.on('user typing', function(isTyping){
+    // console.log(isTyping);
+    message = socket.username + ' is typing...';
+    socket.broadcast.emit('user writting', {msg:message, isTypingUser:isTyping});
+  })
 });
 
 http.listen(3000, function(){

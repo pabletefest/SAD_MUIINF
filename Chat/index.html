@@ -15,6 +15,7 @@
   </head>
   <body>
     <ul id="messages"></ul>
+    <p id="typing_label"></p>
     <form action="">
       <input id="m" autocomplete="off" />
       <button id="button">Choose a username and connect to chat</button>
@@ -23,6 +24,7 @@
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
       var isFirstMsg = true;
+      var isTypingMsg;
       var socket = io();
       $('form').submit(function(){
         
@@ -30,12 +32,12 @@
         {
           socket.emit('username check', $('#m').val());
         }
-        else
+        else if ($('#m').val() !== '')
         {
           socket.emit('chat message', $('#m').val());
           $('#messages').append($('<li>').text($('#m').val()));
         }
-        
+      
         $('#m').val('');
         
         return false;
@@ -56,6 +58,37 @@
 
       socket.on('username picked', function(msg){
         $('#messages').append($('<li>').text(msg));
+      });
+
+      // let isTyping = false;
+      let timeoutID;
+
+      document.getElementById('m').addEventListener('keydown', function(event){
+        if (!isFirstMsg && event.code != "Enter")
+        {
+          clearTimeout(timeoutID);
+          socket.emit('user typing', true);
+          isTyping = false;
+          timeoutID = setTimeout(function(){
+            socket.emit('user typing', isTyping);
+          }, 1000);
+        }
+
+        if (!isFirstMsg && event.code == "Enter")
+        {
+          clearTimeout(timeoutID);
+          socket.emit('user typing', false);
+        }
+      });
+
+      socket.on('user writting', function(data){
+        // console.log('Front ' + data.isTypingUser);
+        // console.log('Front ' + data.msg);
+        if (data.isTypingUser)
+          $('#typing_label').text(data.msg);
+        else
+          $('#typing_label').text('');
+          // isTyping = false;
       });
     </script>
   </body>
