@@ -13,18 +13,25 @@ io.on('connection', function(socket){
 
   socket.on('disconnect', function(){
     console.log('user disconnected');
+    socket.broadcast.emit('user connected', 'Username: ' + socket.username + ' disconnected!');
+    let index = users.indexOf( socket.username );
+ 
+    if ( index !== -1 ) {
+        users.splice( index, 1 );
+    }
   });
 
   socket.on('chat message', function(msg){
     console.log('message: ' + msg);
-    io.emit('chat message', msg);
+    socket.broadcast.emit('chat message', socket.username + ": " + msg);
   });
 
-  socket.on('username check', function(msg){
-    if (users.indexOf(msg) == -1)
+  socket.on('username check', function(name){
+    if (users.indexOf(name) == -1)
     {
-      users.push(msg);
-      socket.broadcast.emit('user connected', 'Username: ' + msg + ' connected!');
+      users.push(name);
+      socket.broadcast.emit('user connected', 'Username: ' + name + ' connected!');
+      socket.username = name;
       socket.emit('username validated', 'Username has been validated');
     }
     else
