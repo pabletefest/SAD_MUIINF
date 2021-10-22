@@ -14,6 +14,7 @@
     </style>
   </head>
   <body>
+    <small id="users_list"></small>
     <ul id="messages"></ul>
     <p id="typing_label"></p>
     <form action="">
@@ -26,6 +27,7 @@
       var isFirstMsg = true;
       var isTypingMsg;
       var socket = io();
+
       $('form').submit(function(){
         
         if (isFirstMsg)
@@ -47,6 +49,10 @@
       });
 
       socket.on('user connected', function(msg){
+        $('#messages').append($('<li>').text(msg));
+      });
+
+      socket.on('user disconnected', function(msg){
         $('#messages').append($('<li>').text(msg));
       });
 
@@ -89,6 +95,14 @@
         else
           $('#typing_label').text('');
           // isTyping = false;
+      });
+
+      socket.on('users online', function(users){
+        $('#users_list').text('Users connected: ');
+
+        users.forEach(user => {
+          $('#users_list').append(user + ' - ');
+        });
       });
     </script>
   </body>

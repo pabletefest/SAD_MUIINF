@@ -13,12 +13,14 @@ io.on('connection', function(socket){
 
   socket.on('disconnect', function(){
     console.log('user disconnected');
-    socket.broadcast.emit('user connected', 'Username: ' + socket.username + ' disconnected!');
+    socket.broadcast.emit('user disconnected', 'Username: ' + socket.username + ' disconnected!');
     let index = users.indexOf( socket.username );
  
     if ( index !== -1 ) {
         users.splice( index, 1 );
     }
+
+    io.emit('users online', users);
   });
 
   socket.on('chat message', function(msg){
@@ -33,6 +35,7 @@ io.on('connection', function(socket){
       socket.broadcast.emit('user connected', 'Username: ' + name + ' connected!');
       socket.username = name;
       socket.emit('username validated', 'Username has been validated');
+      io.emit('users online', users);
     }
     else
     {
