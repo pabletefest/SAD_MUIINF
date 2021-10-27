@@ -12,3 +12,4 @@ socket.on(); //event listener, can be called on client to execute on server
 io.sockets.socket(); //for emiting to specific clients
 io.sockets.emit(); //send to all connected clients (same as socket.emit)
 io.sockets.on() ; //initial connection from a client.
+io.to(socketId).emit(); //to individual socketid (private message)

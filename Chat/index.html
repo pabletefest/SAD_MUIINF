@@ -24,15 +24,37 @@
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
+      var username;
       var isFirstMsg = true;
       var isTypingMsg;
       var socket = io();
+
+      $('#messages').append($('<li>').text('----- TO SEND A PRIVATE MESSAGE THE FORMAT IS THE FOLLOWING: -----'));
+      $('#messages').append($('<li>').text('/pm @destUserName message'));
 
       $('form').submit(function(){
         
         if (isFirstMsg)
         {
           socket.emit('username check', $('#m').val());
+        }
+        else if ($('#m').val().includes('/pm'))
+        {
+          if ($('#m').val().split(' ').length < 3)
+          {
+            $('#messages').append($('<li>').text('----- TO SEND A PRIVATE MESSAGE THE FORMAT IS THE FOLLOWING: -----'));
+            $('#messages').append($('<li>').text('/pm @destUserName message'));
+          }
+          else
+          {
+            let destUser = $('#m').val().split(' ')[1].split('@').pop();  
+
+            let firstSpace = $('#m').val().indexOf(' ');
+            let privateMessage = $('#m').val().substring($('#m').val().indexOf(' ', firstSpace + 1));
+            console.log(privateMessage);
+
+            socket.emit('private message', {from: username, to: destUser, msg: privateMessage});
+          }
         }
         else if ($('#m').val() !== '')
         {
@@ -56,8 +78,9 @@
         $('#messages').append($('<li>').text(msg));
       });
 
-      socket.on('username validated', function(msg){
-        $('#messages').append($('<li>').text(msg));
+      socket.on('username validated', function(data){
+        $('#messages').append($('<li>').text(data.info));
+        username = data.username;
         isFirstMsg = false;
         $('#button').text('Send message');
       });
@@ -101,8 +124,16 @@
         $('#users_list').text('Users connected: ');
 
         users.forEach(user => {
-          $('#users_list').append(user + ' - ');
+          $('#users_list').append(user.username + ' - ');
         });
+      });
+
+      socket.on('private message response', function(data){
+        $('#messages').append($('<li>').text('[Private message from ' + data.from + ']: ' + data.msg));
+      });
+
+      socket.on('wrong destination username', function(msg){
+        $('#messages').append($('<li>').text(msg));
       });
     </script>
   </body>

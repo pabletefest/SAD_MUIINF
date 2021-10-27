@@ -14,7 +14,7 @@ io.on('connection', function(socket){
   socket.on('disconnect', function(){
     console.log('user disconnected');
     socket.broadcast.emit('user disconnected', 'Username: ' + socket.username + ' disconnected!');
-    let index = users.indexOf( socket.username );
+    let index = users.indexOf({username: socket.username, socketId: socket.id});
  
     if ( index !== -1 ) {
         users.splice( index, 1 );
@@ -29,12 +29,12 @@ io.on('connection', function(socket){
   });
 
   socket.on('username check', function(name){
-    if (users.indexOf(name) == -1)
+    if (users.indexOf({username: name, socketId: socket.id}) == -1)
     {
-      users.push(name);
+      users.push({username: name, socketId: socket.id});
       socket.broadcast.emit('user connected', 'Username: ' + name + ' connected!');
       socket.username = name;
-      socket.emit('username validated', 'Username has been validated');
+      socket.emit('username validated', {username: name, info: 'Username has been validated'});
       io.emit('users online', users);
     }
     else
@@ -46,7 +46,22 @@ io.on('connection', function(socket){
   socket.on('user typing', function(isTyping){
     // console.log(isTyping);
     message = socket.username + ' is typing...';
-    socket.broadcast.emit('user writting', {msg:message, isTypingUser:isTyping});
+    socket.broadcast.emit('user writting', {msg: message, isTypingUser: isTyping});
+  })
+
+  socket.on('private message', function(data){
+    console.log('PRIVATE MESSAGE RECEIVED');
+
+    let destinationUser = users.find(user => user.username === data.to);
+
+    if (destinationUser != undefined)
+    {
+      io.to(destinationUser.socketId).emit('private message response', {from: data.from, msg: data.msg});
+    }
+    else
+    {
+      socket.emit('wrong destination username', 'The user you want to send a message is not connected!!');
+    }
   })
 });
 
