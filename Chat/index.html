@@ -29,22 +29,31 @@
       var isTypingMsg;
       var socket = io();
 
+      //Show this message at the beginnig to show the users how to send private messages to other connected clients.
       $('#messages').append($('<li>').text('----- TO SEND A PRIVATE MESSAGE THE FORMAT IS THE FOLLOWING: -----'));
       $('#messages').append($('<li>').text('/pm @destUserName message'));
 
+        //Emitted when user presses submit button
       $('form').submit(function(){
         
+        //If its the first time the client writes, chooses a username, otherwise sends the message to the chat.
         if (isFirstMsg)
         {
           socket.emit('username check', $('#m').val());
         }
+        //It checks for '/pm' in the input field to know if it's a private message
         else if ($('#m').val().includes('/pm'))
         {
+          //It the private message doesn't follow the sintax specified to the client, shows again the methodology
           if ($('#m').val().split(' ').length < 3)
           {
             $('#messages').append($('<li>').text('----- TO SEND A PRIVATE MESSAGE THE FORMAT IS THE FOLLOWING: -----'));
             $('#messages').append($('<li>').text('/pm @destUserName message'));
           }
+          /*
+          * From the input given by the client, it's retrieved the destination user and the private message.
+          * A 'private message' event es emitted to the server to process the data.
+          */
           else
           {
             let destUser = $('#m').val().split(' ')[1].split('@').pop();  
@@ -56,6 +65,7 @@
             socket.emit('private message', {from: username, to: destUser, msg: privateMessage});
           }
         }
+        //Regular messages to all clients are emitted via 'chat message' event and sent to the server to be processed
         else if ($('#m').val() !== '')
         {
           socket.emit('chat message', $('#m').val());
@@ -66,18 +76,30 @@
         
         return false;
       });
+
+      //Receives answer from the server for 'chat message' event. Appends the message sent by other client to the chat.
       socket.on('chat message', function(msg){
         $('#messages').append($('<li>').text(msg));
       });
 
+      //Receives answer from the server for 'user conencted' event. 
+      //Appends the message notifying a new client connected to the chat.
       socket.on('user connected', function(msg){
         $('#messages').append($('<li>').text(msg));
       });
 
+      //Receives answer from the server for 'user disconnected' event. 
+      //Appends the message notifying a client disconnected to the chat. 
       socket.on('user disconnected', function(msg){
         $('#messages').append($('<li>').text(msg));
       });
 
+      /*
+      * Receives answer from the server for 'user validated' event. 
+      * The username picked by the client is assign locally and the message showing validation is appended to the chat locally.
+      * At this point, the messages sent by the client aren't 'choose username' message anymore.
+      * The client can sent the following messages to other clients in private or for everyone after username validation
+      */
       socket.on('username validated', function(data){
         $('#messages').append($('<li>').text(data.info));
         username = data.username;
@@ -85,13 +107,19 @@
         $('#button').text('Send message');
       });
 
+      //Receives answer from the server for 'user disconnected' event.
+      //This notifies the client the username chosen is already connected and it's appended to the chat locally.
       socket.on('username picked', function(msg){
         $('#messages').append($('<li>').text(msg));
       });
 
-      // let isTyping = false;
       let timeoutID;
 
+      /*
+      * Listens for 'keydown' event for any key pressed by the user.
+      * If the user is typing a 'user typing' event is send to the server
+      * The event is stopped when the user stops typing or the 'enter' key was pressed to send the message
+      */
       document.getElementById('m').addEventListener('keydown', function(event){
         if (!isFirstMsg && event.code != "Enter")
         {
@@ -110,16 +138,23 @@
         }
       });
 
+      /*
+      * Receives answer from the server for 'user writting' event.
+      * This notifies the client an other client is typing. If the other clients is typing a message in the chat is shown to the receiver client
+      * If the other client stops writting or presses 'enter' key, the message showing the other is typing is removed.
+      */
       socket.on('user writting', function(data){
-        // console.log('Front ' + data.isTypingUser);
-        // console.log('Front ' + data.msg);
         if (data.isTypingUser)
           $('#typing_label').text(data.msg);
         else
           $('#typing_label').text('');
-          // isTyping = false;
       });
 
+      /*
+      * Receives answer from the server for 'users online' event.
+      * This notifies the client how many users are connected and prints the list of users at the top of the chat.
+      * When a new client connects or an existing one disconnects, this event is fired and the list of connected clients updated.
+      */
       socket.on('users online', function(users){
         $('#users_list').text('Users connected: ');
 
@@ -128,10 +163,14 @@
         });
       });
 
+      //Receives answer from the server for 'private message response' event.
+      //The private message received from other client is appended to the local chat showing who sent it.
       socket.on('private message response', function(data){
         $('#messages').append($('<li>').text('[Private message from ' + data.from + ']: ' + data.msg));
       });
 
+      //Receives answer from the server for 'wrong destination username' event.
+      //When the client sends a private messages to not connected users, the server answers back firing this event. The info message is appended to the chat
       socket.on('wrong destination username', function(msg){
         $('#messages').append($('<li>').text(msg));
       });

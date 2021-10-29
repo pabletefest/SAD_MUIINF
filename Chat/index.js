@@ -8,9 +8,11 @@ app.get('/', function(req, res){
 	res.sendFile(__dirname + '/index.html');
 });
 
+//Waiting for client connections
 io.on('connection', function(socket){
   console.log('a user connected');
 
+  //For every client disconnected, other clients are notified and client is removed from users array.
   socket.on('disconnect', function(){
     console.log('user disconnected');
     socket.broadcast.emit('user disconnected', 'Username: ' + socket.username + ' disconnected!');
@@ -23,11 +25,17 @@ io.on('connection', function(socket){
     io.emit('users online', users);
   });
 
+  //When a client emits a 'chat message' event, the server broadcast it to all the other users.
   socket.on('chat message', function(msg){
     console.log('message: ' + msg);
     socket.broadcast.emit('chat message', socket.username + ": " + msg);
   });
 
+  /*
+  * Server checks for the username a client chose. 
+  * If the username is not picked yet, then it's added to the array and broadcasts to all other users a new client connected.
+  * The new client gets back a 'user valitated' event in case the chosen username was valid or 'suername picked' event otherwise.
+  */
   socket.on('username check', function(name){
     if (users.indexOf({username: name, socketId: socket.id}) == -1)
     {
@@ -43,12 +51,18 @@ io.on('connection', function(socket){
     }
   });
 
+  //Server receives 'user typing' events to know when a client is typing, and notify the other clients.
   socket.on('user typing', function(isTyping){
-    // console.log(isTyping);
     message = socket.username + ' is typing...';
     socket.broadcast.emit('user writting', {msg: message, isTypingUser: isTyping});
   })
 
+  /*
+  * Server wait for 'private message' event sent by any user. It looks for the destination user in the array and if present, 
+  with the destination client ID sends the private message to him.
+  * If the server can't find the destination user because it's not connected, 
+  then it emits to the sender client the 'wrong destination username' event
+  */
   socket.on('private message', function(data){
     console.log('PRIVATE MESSAGE RECEIVED');
 
@@ -65,6 +79,7 @@ io.on('connection', function(socket){
   })
 });
 
+//Server listens for connections in port 3000
 http.listen(3000, function(){
   console.log('listening on *:3000');
 });
