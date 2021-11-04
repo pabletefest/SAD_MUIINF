@@ -12,7 +12,7 @@ class ServiceRegistry {
   get(name, version) {
     this.cleanup();
     const candidates = Object.values(this.services)
-      .filter(service => service.name === name && service.version === version);
+      .filter(service => service.name === name && semver.satisfies(service.version, version));
 
     return candidates[Math.floor(Math.random() * candidates.length)];
   }
