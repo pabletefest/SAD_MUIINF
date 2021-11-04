@@ -1,5 +1,10 @@
 import * as DB from './MongoDB';
 import {Product} from './Producto';
+const axios = require('axios');
+const axiosInstance = axios.create({
+    baseURL: 'http://localhost:3000/'
+    /* other custom settings */
+  });
 
 /**
  * Class representing the shopping cart object, in charge of managing the products the user wants to add/remove.
@@ -11,6 +16,19 @@ export class ShoppingCart
 
     constructor()
     {
+        axiosInstance.post('/register/', {
+            name: 'ShoppingCart',
+            version: '1',
+            port: '1000'
+          })
+          .then(function (response) {
+            console.log(response);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+
+        console.log('ShoppingCart instance created and HTTP request sent');
     }
 
     /**
@@ -78,3 +96,5 @@ export class ShoppingCart
         // });
     }
 }
+
+let cart = new ShoppingCart();
