@@ -24,7 +24,8 @@ module.exports = () => {
     service.delete('/carrito/remove/:code/:description/:price/:quantity', (req, res) => {
         const { code, description, price, quantity } = req.params;
 
-        const product = cart.removeProduct(new Product(code, description, price, quantity));
+        let productObject = new Product(code, description, price, quantity);
+        const product = cart.removeProduct(productObject);
         return res.json(product);
     });
 

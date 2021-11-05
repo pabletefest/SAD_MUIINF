@@ -62,12 +62,18 @@ module.exports = class ShoppingCart
     {
         console.log("\nRemoving product...\n");
 
-        let indexObject = this.products.indexOf(product);
+        // let indexObject = this.products.indexOf(product);
+        let indexObject = this.products.findIndex(element => element.code == product.code);
 
         if (indexObject == -1)
+        {
             console.log("Couldn't remove the product, not present!\n");
+            return product;
+        }
 
         this.products.splice(indexObject, 1);
+
+        console.log("Product removed successfully\n");
 
         return product;
     }
