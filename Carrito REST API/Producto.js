@@ -1,6 +1,6 @@
-export class Product
+module.exports = class Product
 {
-    constructor(code, description, price = 1, quantity = 1)
+    constructor(code, description, price, quantity)
     {   
         this.code = code;
         this.description = description;
